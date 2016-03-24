@@ -1,0 +1,75 @@
+.results-bg-buffer
+.results-bg
+	.container#client-results
+		div.row.results-top
+			div.col-md-4
+				.result-top-item-wrap
+					a.filter(href='' data-template-url='../../../client/templates/dashboard-popover.html', data-animation='am-flip-x', data-auto-close='1', bs-popover)
+						| Filter
+						img(src='/assets/images/filter.png')
+				.result-top-item-wrap
+					button#dateDropdown.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true')
+						| {{filter.time}}
+						img(src='/assets/images/calendar.png')
+					ul.dropdown-menu(aria-labelledby='dateDropdown')
+						li(ng-repeat='(key,length) in time_filters')
+							a(href='', ng-click='changeTime(key)') {{key}}
+			div.col-md-8
+				.list-pagination-container
+					a.page-change(href='' ng-click='changePage(filter.page-1)')
+						span Prev
+					div.dropdown
+						button#dateDropdown.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='true',style="float:left;")
+							strong
+								span.ng-cloak Page {{filter.page+1}}
+						ul.dropdown-menu(aria-labelledby='dateDropdown')
+							li(ng-repeat='i in getNumber(noOfPages)')
+								a(href='', ng-click='changePage(i)') Page {{i+1}}
+					a.page-change(href='' ng-click='changePage(filter.page+1)')
+						span Next
+
+		div.row.card.card-1.dashboard-lead.ng-cloak(ng-repeat='call in calls | filter : filter | orderBy : "-created" | pageFilter : filter.page : pageEntries')
+			div.row.card-top-row
+				.col-md-12
+					p.card-top-text {{call.agent_alias}}
+					p.card-top-text {{call.created.getDate()}} / {{call.created.getMonth()+1}} / {{call.created.getFullYear()}}
+					p.card-top-text {{call.created.getHours()}} : {{call.created.getMinutes() | minuteFormat}}
+					p.card-top-text Call length: {{call.duration/60 | number: 0}} minutes, {{call.duration%60 | number: 0}} seconds
+			div.row
+				div.col-md-3.dashboard-lead-left
+					.left-card-container
+						strong.card-header Company
+						p.card-text {{call.lead_info.company}}
+						p.card-text {{call.lead_info.number}}
+					.left-card-container
+						strong.card-header Score
+						span.card-star-glyph(class='{{star(call.rating,1)}}')
+						span.card-star-glyph(class='{{star(call.rating,2)}}')
+						span.card-star-glyph(class='{{star(call.rating,3)}}')
+					.left-card-container
+						strong.card-header Spoke to
+						p.card-text {{call.contact_info.person.name}}
+						p.card-text {{call.contact_info.person.role}}
+						p.card-text {{call.contact_info.number}}
+						p.card-text {{call.contact_info.email}}
+					.left-card-container
+						strong.card-header Outcome
+						p.card-text {{call.outcome}}
+				div.col-md-9
+					div.row
+						div.col-md-12
+							strong.card-header Call notes
+							p.card-text {{call.notes}}
+					hr
+					div.row
+						div.col-md-12
+							strong.card-header Call recording
+							audio-player(ng-show='call.duration>0' source='call.recording_url')
+							p.card-text(ng-show='call.duration==0') No recording for this call
+
+					hr
+					div.row
+						div.col-md-4.dashboard-question(ng-repeat='answer in call.answers')
+							strong.card-header {{answer.question}}
+							p.card-text {{answer.answer}}
+		button.btn.btn-primary(ng-hide='noOfPages==0' ng-click='download()') Download CSV

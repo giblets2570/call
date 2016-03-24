@@ -1,0 +1,48 @@
+.container
+	.row
+		.col-md-4
+			center
+				h4 Earned
+				h2 £ {{earned/100|number:2}}
+				h4 this month
+		.col-md-8
+			.row(ng-hide='campaigns.length==0')
+				.col-md-12
+					h4
+						strong Live campaigns
+			.row(ng-repeat='campaign in campaigns')
+				.col-md-12
+					button.campaign(ng-click='go_campaign(campaign._id)')
+						.row
+							.col-xs-offset-2.col-xs-8
+								strong {{campaign.name}}
+								br
+								br
+						.row
+							.col-xs-offset-2.col-xs-4
+								p {{campaign.client_name}}
+								p £{{getAgentPay(campaign) | number : 2}} min
+							.col-xs-4
+								p {{campaign.num_leads}} Contacts left to call
+								p Ending in {{numDays(campaign)}} days
+			.row(ng-hide='other_campaigns.length==0')
+				.col-md-12
+					h4
+						strong Inactive campaigns
+			.row(ng-repeat='campaign in other_campaigns')
+				.col-md-12
+					button.campaign(ng-click='go_other(campaign._id)')
+						.row
+							.col-xs-offset-2.col-xs-8
+								strong {{campaign.name}}
+								br
+								br
+						.row
+							.col-xs-offset-2.col-xs-4
+								p {{campaign.client_name}}
+								p £{{getAgentPay(campaign) | number : 2}} min
+
+			.row(ng-show='campaigns.length==0 && other_campaigns.length==0')
+				.col-md-8
+					h3 We are currently processing your account
+					p Please come back later
